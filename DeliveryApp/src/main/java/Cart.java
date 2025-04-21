@@ -9,7 +9,7 @@ public class Cart {
     }
 
     public static List<String> getItems() {
-        return new ArrayList<>(items); // عشان نرجع نسخة فقط
+        return new ArrayList<>(items); 
     }
 
     public static void clear() {

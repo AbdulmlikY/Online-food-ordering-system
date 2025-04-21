@@ -17,17 +17,17 @@ public class RestaurantListFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        restaurants = new Object[][] {
-            {"Dunkin", "Coffee", "https://logos-world.net/wp-content/uploads/2020/11/Dunkin-Logo.png", 4.0},
-            {"KFC", "Burgers", "https://1000logos.net/wp-content/uploads/2021/04/KFC-logo.png", 3.7},
-            {"Starbucks", "Coffee", "https://upload.wikimedia.org/wikipedia/sco/thumb/a/a3/Starbucks_Corporation_Logo_2011.svg/800px-Starbucks_Corporation_Logo_2011.svg.png", 4.2},
-            {"Herfy", "Burgers", "https://upload.wikimedia.org/wikipedia/en/f/f5/Herfy_logo.png", 4.0},
-            {"Baskin Robbins", "Desserts", "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Baskin-Robbins_logo.svg/512px-Baskin-Robbins_logo.svg.png", 4.7},
-            {"Al Sadhan", "Groceries", "https://sadhan.com/images/sadhan.png", 4.4},
-            {"Ramli Cafe", "Juice", "https://img.freepik.com/free-photo/front-view-coffee-cup-with-coffee-beans-dark-background_140725-105774.jpg", 5.0},
-            {"Pizza House", "Pizza", "https://cdn-icons-png.flaticon.com/512/3132/3132693.png", 4.3},
-            {"Trolley", "Groceries", "https://www.pngplay.com/wp-content/uploads/13/Grocery-Cart-Transparent-PNG.png", 5.0},
-        };
+     restaurants = new Object[][] {
+    {"Dunkin", "Coffee", "images/dunkin.png", 4.0},
+    {"KFC", "Burgers", "images/KFC.png", 3.7},
+    {"Starbucks", "Coffee", "images/Starbucks.png", 4.2},
+    {"Herfy", "Burgers", "images/herfy.png", 4.0},
+    {"Baskin Robbins", "Desserts", "images/baskinrobin.png", 4.7},
+    {"Al Sadhan", "Groceries", "images/ALSADHAN.jpg", 4.4},
+    {"Ramli Cafe", "Juice", "images/RAMLI.jpg", 5.0},
+    {"Pizza House", "Pizza", "images/PIZZAHOUSE.jpg", 4.3},
+    {"Trolley", "Groceries", "images/trolley.jpg", 5.0},
+};
 
         // Filter dropdown
         String[] filters = {"All", "Burgers", "Pizza", "Coffee", "Groceries", "Juice", "Desserts"};
@@ -64,16 +64,22 @@ public class RestaurantListFrame extends JFrame {
             card.setBackground(Color.WHITE);
             card.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-//            try {
-//                URL url = new URL(imageUrl);
-//                Image img = Toolkit.getDefaultToolkit().createImage(url);
-//                Image scaled = img.getScaledInstance(300, 160, Image.SCALE_SMOOTH);
-//                JLabel imageLabel = new JLabel(new ImageIcon(scaled));
-//                card.add(imageLabel, BorderLayout.NORTH);
-//            } catch (Exception e) {
-//                card.add(new JLabel("Image not loaded"), BorderLayout.NORTH);
-//            }
-                card.add(new JLabel("Restaurant Image"), BorderLayout.NORTH);
+try {
+    URL imagePath = getClass().getClassLoader().getResource(imageUrl);
+    if (imagePath != null) {
+        ImageIcon icon = new ImageIcon(imagePath);
+        Image img = icon.getImage().getScaledInstance(300, 160, Image.SCALE_SMOOTH);
+        JLabel imageLabel = new JLabel(new ImageIcon(img));
+        card.add(imageLabel, BorderLayout.NORTH);
+    } else {
+        card.add(new JLabel("Image not found"), BorderLayout.NORTH);
+    }
+} catch (Exception e) {
+    card.add(new JLabel("Image load error"), BorderLayout.NORTH);
+}
+
+
+
 
 
             JPanel textPanel = new JPanel();

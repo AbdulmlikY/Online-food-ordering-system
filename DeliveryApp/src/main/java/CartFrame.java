@@ -56,12 +56,12 @@ public class CartFrame extends JFrame {
                     return;
                 }
 
-                // 1. محاكاة الدفع أولاً
+     
                 PaymentFrame paymentFrame = new PaymentFrame();
                 paymentFrame.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
                 paymentFrame.setVisible(true);
 
-                // 2. بعد الدفع، نسجل الطلب
+        
                 try {
                     Connection conn = DatabaseConnection.connect();
                     if (conn == null) {

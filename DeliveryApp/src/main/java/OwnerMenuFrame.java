@@ -51,7 +51,7 @@ public class OwnerMenuFrame extends JFrame {
             Connection conn = DatabaseConnection.connect();
             String sql = "SELECT id, name, price FROM meals WHERE restaurant_name = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, CurrentUser.getName());  // بناءً على اسم المستخدم
+            stmt.setString(1, CurrentUser.getName()); 
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
