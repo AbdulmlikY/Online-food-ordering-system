@@ -5,29 +5,28 @@ public class OwnerDashboardFrame extends JFrame {
 
     public OwnerDashboardFrame() {
         setTitle("Restaurant Owner Dashboard");
-        setSize(400, 300);
+        setSize(400, 250);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(3, 1, 10, 10));
+        setLayout(new BorderLayout());
 
         JLabel title = new JLabel("Owner Panel", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 24));
-        add(title);
+        add(title, BorderLayout.NORTH);
 
         JButton manageMenuButton = new JButton("Manage My Menu");
-        JButton viewOrdersButton = new JButton("View Orders");
-        JButton logoutButton = new JButton("Logout");
+        manageMenuButton.setPreferredSize(new Dimension(200, 60));
+        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        centerPanel.add(manageMenuButton);
+        add(centerPanel, BorderLayout.CENTER);
 
-        add(manageMenuButton);
-        add(viewOrdersButton);
-        add(logoutButton);
+        JButton logoutButton = new JButton("Logout");
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.add(logoutButton);
+        add(bottomPanel, BorderLayout.SOUTH);
 
         manageMenuButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Coming soon: Menu Management");
-        });
-
-        viewOrdersButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Coming soon: Order Viewer for Your Restaurant");
+            new OwnerMenuFrame().setVisible(true);
         });
 
         logoutButton.addActionListener(e -> {

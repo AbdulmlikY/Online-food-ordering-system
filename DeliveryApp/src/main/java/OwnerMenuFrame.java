@@ -51,7 +51,7 @@ public class OwnerMenuFrame extends JFrame {
             Connection conn = DatabaseConnection.connect();
             String sql = "SELECT id, name, price FROM meals WHERE restaurant_name = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, CurrentUser.getName()); 
+            stmt.setString(1, CurrentUser.getRestaurantName());
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -81,7 +81,7 @@ public class OwnerMenuFrame extends JFrame {
             Connection conn = DatabaseConnection.connect();
             String sql = "INSERT INTO meals (restaurant_name, name, price) VALUES (?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, CurrentUser.getName());
+            stmt.setString(1, CurrentUser.getRestaurantName());
             stmt.setString(2, name);
             stmt.setDouble(3, price);
             stmt.executeUpdate();
@@ -108,9 +108,10 @@ public class OwnerMenuFrame extends JFrame {
         int id = (int) model.getValueAt(selectedRow, 0);
         try {
             Connection conn = DatabaseConnection.connect();
-            String sql = "DELETE FROM meals WHERE id = ?";
+            String sql = "DELETE FROM meals WHERE id = ? AND restaurant_name = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id);
+            stmt.setString(2, CurrentUser.getRestaurantName());
             stmt.executeUpdate();
             conn.close();
 

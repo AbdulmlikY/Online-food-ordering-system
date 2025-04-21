@@ -54,11 +54,10 @@ public class LoginFrame extends JFrame {
                     return;
                 }
 
-                String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
+                String sql = "SELECT id, name, email, password, role, restaurant_name FROM users WHERE email = ? AND password = ?";
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1, email);
                 stmt.setString(2, password);
-
                 ResultSet rs = stmt.executeQuery();
 
                 if (rs.next()) {
@@ -66,21 +65,31 @@ public class LoginFrame extends JFrame {
                     String name = rs.getString("name");
                     String emailFromDb = rs.getString("email");
                     String role = rs.getString("role");
+                    String restaurantName = rs.getString("restaurant_name");
 
+                    // حفظ بيانات المستخدم
                     CurrentUser.setUser(userId, name, emailFromDb);
+                    CurrentUser.set(name, restaurantName); // حفظ اسم المطعم
+
+                    System.out.println("Email from DB: '" + emailFromDb + "'");
+                    System.out.println("Role from DB: '" + role + "'");
+                    System.out.println("Restaurant: '" + restaurantName + "'");
 
                     JOptionPane.showMessageDialog(this, "Welcome, " + name + "!");
                     this.dispose();
 
-                    switch (role) {
+                    switch (role.toLowerCase()) {
                         case "admin":
                             new AdminDashboardFrame().setVisible(true);
                             break;
                         case "owner":
-                            new OwnerDashboardFrame().setVisible(true); // تحتاج تنشئها
+                            new OwnerDashboardFrame().setVisible(true);
+                            break;
+                        case "customer":
+                            new RestaurantListFrame().setVisible(true);
                             break;
                         default:
-                            new RestaurantListFrame().setVisible(true);
+                            JOptionPane.showMessageDialog(this, "Unknown user role: " + role);
                             break;
                     }
                 } else {

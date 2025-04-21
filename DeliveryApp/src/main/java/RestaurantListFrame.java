@@ -2,13 +2,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
-import java.util.ArrayList;
+import java.sql.*;
 
 public class RestaurantListFrame extends JFrame {
 
     private JPanel container;
     private JComboBox<String> filterBox;
-    private Object[][] restaurants;
 
     public RestaurantListFrame() {
         setTitle("Restaurants");
@@ -16,18 +15,6 @@ public class RestaurantListFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-
-     restaurants = new Object[][] {
-    {"Dunkin", "Coffee", "images/dunkin.png", 4.0},
-    {"KFC", "Burgers", "images/KFC.png", 3.7},
-    {"Starbucks", "Coffee", "images/Starbucks.png", 4.2},
-    {"Herfy", "Burgers", "images/herfy.png", 4.0},
-    {"Baskin Robbins", "Desserts", "images/baskinrobin.png", 4.7},
-    {"Al Sadhan", "Groceries", "images/ALSADHAN.jpg", 4.4},
-    {"Ramli Cafe", "Juice", "images/RAMLI.jpg", 5.0},
-    {"Pizza House", "Pizza", "images/PIZZAHOUSE.jpg", 4.3},
-    {"Trolley", "Groceries", "images/trolley.jpg", 5.0},
-};
 
         // Filter dropdown
         String[] filters = {"All", "Burgers", "Pizza", "Coffee", "Groceries", "Juice", "Desserts"};
@@ -48,65 +35,74 @@ public class RestaurantListFrame extends JFrame {
     private void renderCards(String category) {
         container.removeAll();
 
-        for (Object[] data : restaurants) {
-            String name = (String) data[0];
-            String type = (String) data[1];
-            String imageUrl = (String) data[2];
-            double rating = (double) data[3];
+        try {
+            Connection conn = DatabaseConnection.connect();
+            String sql = "SELECT name, type, image_path, rating FROM restaurants";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
 
-            if (!category.equals("All") && !type.equalsIgnoreCase(category)) {
-                continue;
+            while (rs.next()) {
+                String name = rs.getString("name");
+                String type = rs.getString("type");
+                String image = rs.getString("image_path");
+                double rating = rs.getDouble("rating");
+
+                if (!category.equals("All") && !type.equalsIgnoreCase(category)) {
+                    continue;
+                }
+
+                JPanel card = new JPanel();
+                card.setLayout(new BorderLayout());
+                card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+                card.setBackground(Color.WHITE);
+                card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+                try {
+                    System.out.println("Trying to load: " + image);
+   URL path = getClass().getClassLoader().getResource("images/" + image);
+
+    System.out.println("Resolved path: " + path);
+                    if (path != null) {
+                        ImageIcon icon = new ImageIcon(path);
+                        Image img = icon.getImage().getScaledInstance(300, 160, Image.SCALE_SMOOTH);
+                        card.add(new JLabel(new ImageIcon(img)), BorderLayout.NORTH);
+                    } else {
+                        card.add(new JLabel("No Image"), BorderLayout.NORTH);
+                    }
+                } catch (Exception ex) {
+                    card.add(new JLabel("Image error"), BorderLayout.NORTH);
+                }
+
+                JPanel textPanel = new JPanel();
+                textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+                textPanel.setBackground(Color.WHITE);
+                textPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
+
+                JLabel nameLabel = new JLabel(name);
+                nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
+                JLabel typeLabel = new JLabel("<html><small>" + type + "</small></html>");
+                JLabel ratingLabel = new JLabel("⭐ " + rating);
+
+                textPanel.add(nameLabel);
+                textPanel.add(typeLabel);
+                textPanel.add(ratingLabel);
+
+                card.add(textPanel, BorderLayout.CENTER);
+
+                card.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        dispose();
+                        new MenuFrame(name).setVisible(true); // فتح قائمة الوجبات
+                    }
+                });
+
+                container.add(card);
             }
 
-            JPanel card = new JPanel();
-            card.setLayout(new BorderLayout());
-            card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
-            card.setBackground(Color.WHITE);
-            card.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-try {
-    URL imagePath = getClass().getClassLoader().getResource(imageUrl);
-    if (imagePath != null) {
-        ImageIcon icon = new ImageIcon(imagePath);
-        Image img = icon.getImage().getScaledInstance(300, 160, Image.SCALE_SMOOTH);
-        JLabel imageLabel = new JLabel(new ImageIcon(img));
-        card.add(imageLabel, BorderLayout.NORTH);
-    } else {
-        card.add(new JLabel("Image not found"), BorderLayout.NORTH);
-    }
-} catch (Exception e) {
-    card.add(new JLabel("Image load error"), BorderLayout.NORTH);
-}
-
-
-
-
-
-            JPanel textPanel = new JPanel();
-            textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
-            textPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
-            textPanel.setBackground(Color.WHITE);
-
-            JLabel nameLabel = new JLabel(name);
-            nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
-            JLabel descLabel = new JLabel("<html><small>" + type + "</small></html>");
-            JLabel ratingLabel = new JLabel("⭐ " + rating);
-
-            textPanel.add(nameLabel);
-            textPanel.add(descLabel);
-            textPanel.add(ratingLabel);
-
-            card.add(textPanel, BorderLayout.CENTER);
-
-            card.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    dispose();
-                    new MenuFrame(name).setVisible(true);
-                }
-            });
-
-            container.add(card);
+            conn.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error loading restaurants: " + e.getMessage());
         }
 
         container.revalidate();
