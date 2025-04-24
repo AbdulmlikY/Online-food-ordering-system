@@ -36,17 +36,30 @@ public class RegisterFrame extends JFrame {
         form.add(passwordField);
 
         JButton registerBtn = new JButton("Register");
+        form.add(new JLabel()); // لتعديل تموضع الزر
         form.add(registerBtn);
 
         add(form, BorderLayout.CENTER);
 
         registerBtn.addActionListener(e -> {
-            String name = nameField.getText();
-            String email = emailField.getText();
-            String password = new String(passwordField.getPassword());
+            String name = nameField.getText().trim();
+            String email = emailField.getText().trim();
+            String password = new String(passwordField.getPassword()).trim();
 
             if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please fill in all fields.");
+                return;
+            }
+
+            // التحقق من صحة تنسيق البريد الإلكتروني
+            if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                JOptionPane.showMessageDialog(this, "Invalid email format.");
+                return;
+            }
+
+            // التحقق من قوة كلمة المرور (8 أحرف على الأقل)
+            if (password.length() < 8) {
+                JOptionPane.showMessageDialog(this, "Password must be at least 8 characters long.");
                 return;
             }
 

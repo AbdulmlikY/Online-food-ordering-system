@@ -39,11 +39,24 @@ public class LoginFrame extends JFrame {
         add(form, BorderLayout.CENTER);
 
         loginButton.addActionListener(e -> {
-            String email = emailField.getText();
-            String password = new String(passwordField.getPassword());
+            String email = emailField.getText().trim();
+            String password = new String(passwordField.getPassword()).trim();
 
+            // تحقق من أن الحقول ليست فارغة
             if (email.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please fill in all fields.");
+                return;
+            }
+
+            // التحقق من صحة تنسيق البريد الإلكتروني
+            if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                JOptionPane.showMessageDialog(this, "Invalid email format.");
+                return;
+            }
+
+            // التحقق من قوة كلمة المرور (6 أحرف على الأقل)
+            if (password.length() < 6) {
+                JOptionPane.showMessageDialog(this, "Password must be at least 6 characters long.");
                 return;
             }
 
@@ -67,13 +80,8 @@ public class LoginFrame extends JFrame {
                     String role = rs.getString("role");
                     String restaurantName = rs.getString("restaurant_name");
 
-                    // حفظ بيانات المستخدم
                     CurrentUser.setUser(userId, name, emailFromDb);
-                    CurrentUser.set(name, restaurantName); // حفظ اسم المطعم
-
-                    System.out.println("Email from DB: '" + emailFromDb + "'");
-                    System.out.println("Role from DB: '" + role + "'");
-                    System.out.println("Restaurant: '" + restaurantName + "'");
+                    CurrentUser.set(name, restaurantName);
 
                     JOptionPane.showMessageDialog(this, "Welcome, " + name + "!");
                     this.dispose();
