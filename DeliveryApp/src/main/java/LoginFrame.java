@@ -55,8 +55,8 @@ public class LoginFrame extends JFrame {
             }
 
             // التحقق من قوة كلمة المرور (6 أحرف على الأقل)
-            if (password.length() < 6) {
-                JOptionPane.showMessageDialog(this, "Password must be at least 6 characters long.");
+            if (password.length() < 8) {
+                JOptionPane.showMessageDialog(this, "Password must be at least 8 characters long.");
                 return;
             }
 
