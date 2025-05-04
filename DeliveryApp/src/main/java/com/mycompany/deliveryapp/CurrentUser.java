@@ -1,3 +1,5 @@
+package com.mycompany.deliveryapp;
+
 public class CurrentUser {
     private static int id;
     private static String name;

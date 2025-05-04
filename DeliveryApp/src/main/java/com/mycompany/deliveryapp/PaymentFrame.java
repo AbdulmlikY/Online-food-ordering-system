@@ -1,3 +1,5 @@
+package com.mycompany.deliveryapp;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -39,13 +41,19 @@ public class PaymentFrame extends JFrame {
 
         payBtn.addActionListener(e -> {
             String method = (String) methodBox.getSelectedItem();
+            String cardNum = cardNumber.getText().trim();
+            String cvvNum = cvv.getText().trim();
 
             if (method.equals("Cash on Delivery")) {
                 JOptionPane.showMessageDialog(this, "Order confirmed! Please pay upon delivery.");
                 this.dispose();
             } else {
-                if (cardNumber.getText().isEmpty() || cvv.getText().isEmpty()) {
+                if (cardNum.isEmpty() || cvvNum.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "Please enter card details.");
+                } else if (!cardNum.matches("\\d{12}")) {
+                    JOptionPane.showMessageDialog(this, "Card number must be exactly 12 digits.");
+                } else if (!cvvNum.matches("\\d{3}")) {
+                    JOptionPane.showMessageDialog(this, "CVV must be exactly 3 digits.");
                 } else {
                     JOptionPane.showMessageDialog(this, "Payment successful with " + method + "!");
                     this.dispose();

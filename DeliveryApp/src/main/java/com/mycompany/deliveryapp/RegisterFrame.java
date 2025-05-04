@@ -1,3 +1,5 @@
+package com.mycompany.deliveryapp;
+
 import javax.swing.*;
 import java.awt.*;
 import java.sql.Connection;
