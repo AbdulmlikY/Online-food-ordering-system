@@ -52,7 +52,7 @@ public class AdminUpdateRatingFrame extends JFrame {
                 if (updated > 0) {
                     JOptionPane.showMessageDialog(this, "Rating updated.");
                     this.dispose();
-                    new RestaurantListFrame().setVisible(true); // تحديث الواجهة (اختياري)
+                    new RestaurantListFrame().setVisible(true); 
                 } else {
                     JOptionPane.showMessageDialog(this, "Restaurant not found.");
                 }

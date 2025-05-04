@@ -44,19 +44,19 @@ public class LoginFrame extends JFrame {
             String email = emailField.getText().trim();
             String password = new String(passwordField.getPassword()).trim();
 
-            // تحقق من أن الحقول ليست فارغة
+            
             if (email.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please fill in all fields.");
                 return;
             }
 
-            // التحقق من صحة تنسيق البريد الإلكتروني
+           
             if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
                 JOptionPane.showMessageDialog(this, "Invalid email format.");
                 return;
             }
 
-            // التحقق من قوة كلمة المرور (6 أحرف على الأقل)
+           
             if (password.length() < 8) {
                 JOptionPane.showMessageDialog(this, "Password must be at least 8 characters long.");
                 return;

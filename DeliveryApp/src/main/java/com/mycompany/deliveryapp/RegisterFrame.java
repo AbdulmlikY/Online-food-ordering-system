@@ -18,67 +18,67 @@ public class RegisterFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // العنوان في الأعلى
+        
         JLabel title = new JLabel("Register", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 24));
         add(title, BorderLayout.NORTH);
 
-        // نموذج الإدخال
+        
         JPanel form = new JPanel(new GridLayout(5, 2, 10, 10));
         form.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
 
-        // حقل الاسم
+       
         form.add(new JLabel("Name:"));
         nameField = new JTextField();
         form.add(nameField);
 
-        // حقل البريد الإلكتروني
+        
         form.add(new JLabel("Email:"));
         emailField = new JTextField();
         form.add(emailField);
 
-        // حقل كلمة المرور
+        
         form.add(new JLabel("Password:"));
         passwordField = new JPasswordField();
         form.add(passwordField);
 
-        // زر التسجيل
+        
         JButton registerBtn = new JButton("Register");
 
-        // زر العودة لتسجيل الدخول
+        
         JButton backBtn = new JButton("Back to Login");
 
-        // نضيف الزرين في آخر صف
+        
         form.add(backBtn);
         form.add(registerBtn);
 
         add(form, BorderLayout.CENTER);
 
-        // تنفيذ التسجيل عند الضغط على Register
+        
         registerBtn.addActionListener(e -> {
             String name = nameField.getText().trim();
             String email = emailField.getText().trim();
             String password = new String(passwordField.getPassword()).trim();
 
-            // التحقق من أن كل الحقول معبأة
+            
             if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please fill in all fields.");
                 return;
             }
 
-            // التحقق من تنسيق البريد الإلكتروني
+           
             if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
                 JOptionPane.showMessageDialog(this, "Invalid email format.");
                 return;
             }
 
-            // التحقق من قوة كلمة المرور
+            
             if (password.length() < 8) {
                 JOptionPane.showMessageDialog(this, "Password must be at least 8 characters long.");
                 return;
             }
 
-            // محاولة الحفظ في قاعدة البيانات
+            
             try {
                 Connection conn = DatabaseConnection.connect();
                 if (conn == null) {
@@ -108,7 +108,7 @@ public class RegisterFrame extends JFrame {
             }
         });
 
-        // زر العودة لتسجيل الدخول
+       
         backBtn.addActionListener(e -> {
             this.dispose();
             new LoginFrame().setVisible(true);

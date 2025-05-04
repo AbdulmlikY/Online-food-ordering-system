@@ -6,7 +6,7 @@ public class CurrentUser {
     private static String email;
     private static String restaurantName;
 
-    // النسخة الكاملة
+   
     public static void setUser(int userId, String username, String userEmail, String rName) {
         id = userId;
         name = username;
@@ -14,7 +14,7 @@ public class CurrentUser {
         restaurantName = rName;
     }
 
-    // النسخة البسيطة (اختيارية حسب استخدامك)
+  
     public static void setUser(int userId, String username, String userEmail) {
         id = userId;
         name = username;

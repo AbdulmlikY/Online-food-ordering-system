@@ -7,10 +7,10 @@ public class AdminDashboardFrame extends JFrame {
 
     public AdminDashboardFrame() {
         setTitle("Admin Dashboard");
-        setSize(400, 500); // الحجم يبقى كما هو
+        setSize(400, 500); 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(5, 1, 10, 10)); // غيرنا عدد الصفوف إلى 5
+        setLayout(new GridLayout(5, 1, 10, 10)); 
 
         JLabel title = new JLabel("Admin Panel", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 24));

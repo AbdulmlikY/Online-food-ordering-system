@@ -15,8 +15,7 @@ public class AdminUpdateImageFrame extends JFrame {
         setSize(400, 250);
         setLocationRelativeTo(null);
         setLayout(new GridLayout(5, 1, 10, 10));
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE); // إغلاق النافذة فقط
-
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE); 
         restaurantNameField = new JTextField();
         imagePathLabel = new JLabel("No file selected", SwingConstants.CENTER);
         JButton browseButton = new JButton("Browse Image");
@@ -28,16 +27,16 @@ public class AdminUpdateImageFrame extends JFrame {
         add(browseButton);
         add(saveButton);
 
-        // فتح مستعرض الصور
+       
         browseButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
-                imagePathLabel.setText(file.getName()); // فقط اسم الملف
+                imagePathLabel.setText(file.getName()); 
             }
         });
 
-        // حفظ التحديث
+        
         saveButton.addActionListener(e -> {
             String restaurant = restaurantNameField.getText().trim();
             String imagePath = imagePathLabel.getText().trim();
@@ -58,7 +57,7 @@ public class AdminUpdateImageFrame extends JFrame {
                 if (updated > 0) {
                     JOptionPane.showMessageDialog(this, "Image updated successfully.");
                     this.dispose();
-                    new RestaurantListFrame().setVisible(true); // تحديث الواجهة
+                    new RestaurantListFrame().setVisible(true); 
                 } else {
                     JOptionPane.showMessageDialog(this, "Restaurant not found.");
                 }
@@ -67,6 +66,6 @@ public class AdminUpdateImageFrame extends JFrame {
             }
         });
 
-        setVisible(true); // إظهار النافذة
+        setVisible(true); 
     }
 }
