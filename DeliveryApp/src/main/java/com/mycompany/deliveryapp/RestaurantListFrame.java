@@ -56,7 +56,7 @@ public class RestaurantListFrame extends JFrame {
                 card.setLayout(new BorderLayout());
                 card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
                 card.setBackground(Color.WHITE);
-                card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                card.setCursor(new Cursor(Cursor.HAND_CURSOR));// يغير شكل الموشر
                 ////
                 try {// يتاكد الصوره موجوده ولالا
                     System.out.println("Trying to load: " + image);
@@ -106,11 +106,9 @@ public class RestaurantListFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Error loading restaurants: " + e.getMessage());
         }
 
-        container.revalidate();
-        container.repaint();
+        container.revalidate();//تعيد الترتيب
+        container.repaint();//تعيد رسم container
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new RestaurantListFrame().setVisible(true));
-    }
+   
 }

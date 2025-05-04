@@ -37,7 +37,5 @@ public class OwnerDashboardFrame extends JFrame {
         });
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new OwnerDashboardFrame().setVisible(true));
-    }
+ 
 }

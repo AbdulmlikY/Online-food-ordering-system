@@ -8,10 +8,10 @@ import java.util.ArrayList;
 
 public class MenuFrame extends JFrame {
 
-    private DefaultListModel<String> mealModel;
-    private JList<String> mealList;
-    private JTextField searchField;
-    private ArrayList<String> allMeals = new ArrayList<>();
+    private DefaultListModel<String> mealModel;//عرض اسماء الوجبات
+    private JList<String> mealList;//ليست لاسماء الوجبات
+    private JTextField searchField;//مربع بحث لفلتره
+    private ArrayList<String> allMeals = new ArrayList<>();//كل الوجبات
     private String restaurantName;
 
     public MenuFrame(String restaurantName) {
@@ -22,23 +22,23 @@ public class MenuFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-
-        JLabel title = new JLabel("Menu for " + restaurantName, SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 20));
-        add(title, BorderLayout.NORTH);
-
+        
+       // JLabel title = new JLabel("Menu for " + restaurantName, SwingConstants.CENTER);
+        //title.setFont(new Font("Arial", Font.BOLD, 50));
+        //add(title, BorderLayout.NORTH);
+           // اعداد مربع البحث
         JPanel topPanel = new JPanel(new BorderLayout());
         searchField = new JTextField();
         topPanel.add(new JLabel("Search: "), BorderLayout.WEST);
         topPanel.add(searchField, BorderLayout.CENTER);
         add(topPanel, BorderLayout.BEFORE_FIRST_LINE);
-
+        //استدعاء قائمه الوجبات
         mealModel = new DefaultListModel<>();
         loadMealsFromDatabase();
         mealList = new JList<>(mealModel);
         mealList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         add(new JScrollPane(mealList), BorderLayout.CENTER);
-
+        //اضافه ازرار
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton addToCartButton = new JButton("Add to Cart");
         JButton goToCartButton = new JButton("Go to Cart");
@@ -47,10 +47,10 @@ public class MenuFrame extends JFrame {
         buttonPanel.add(goToCartButton);
         buttonPanel.add(backButton);
         add(buttonPanel, BorderLayout.SOUTH);
-
-        searchField.addKeyListener(new KeyAdapter() {
+            //فلتر للبحث
+        searchField.addKeyListener(new KeyAdapter() {//addKeyListener يستقبل اي ضغط على لوحه المفاتيح
             public void keyReleased(KeyEvent e) {
-                String search = searchField.getText().toLowerCase();
+              String search = searchField.getText().toLowerCase();
                 mealModel.clear();
                 for (String meal : allMeals) {
                     if (meal.toLowerCase().contains(search)) {
@@ -59,7 +59,7 @@ public class MenuFrame extends JFrame {
                 }
             }
         });
-
+            //اضافه خاصيه للزر بحيث ينقلك للصفحه الثانيه
         addToCartButton.addActionListener(e -> {
             String selectedMeal = mealList.getSelectedValue();
             if (selectedMeal != null) {
@@ -80,7 +80,7 @@ public class MenuFrame extends JFrame {
             new RestaurantListFrame().setVisible(true);
         });
     }
-
+    //استدعاء داتا بيس
     private void loadMealsFromDatabase() {
         allMeals.clear();
         try {

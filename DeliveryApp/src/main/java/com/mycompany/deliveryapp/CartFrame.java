@@ -8,8 +8,8 @@ import java.util.List;
 
 public class CartFrame extends JFrame {
 
-    private JList<String> cartList;
-    private DefaultListModel<String> cartModel;
+    private JList<String> cartList;//قائمه 
+    private DefaultListModel<String> cartModel;//يحتفظ بالعناصر
     private JButton checkoutButton, backButton;
 
     public CartFrame() {
@@ -19,12 +19,12 @@ public class CartFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        JLabel title = new JLabel("Cart", SwingConstants.CENTER);
+        JLabel title = new JLabel("Cart", SwingConstants.CENTER);//Cart
         title.setFont(new Font("Arial", Font.BOLD, 22));
         add(title, BorderLayout.NORTH);
 
         cartModel = new DefaultListModel<>();
-        List<String> items = Cart.getItems();
+        List<String> items = Cart.getItems();//تجيب الاشياء الموجوده بالسله
 
         if (items.isEmpty()) {
             cartModel.addElement("Cart is empty.");
@@ -33,10 +33,10 @@ public class CartFrame extends JFrame {
                 cartModel.addElement(item);
             }
         }
-
-        cartList = new JList<>(cartModel);
-        add(new JScrollPane(cartList), BorderLayout.CENTER);
-
+        //عرض العناصر
+        cartList = new JList<>(cartModel);// تضيف ليست وتحط العناصر الموجوده في cartmodel
+        add(new JScrollPane(cartList), BorderLayout.CENTER);//تضيف scroll علشان تقدر تنزل
+        //هاذي الpanel علشان تكون خلف الازرار الي تحت 
         JPanel bottomPanel = new JPanel(new FlowLayout());
 
         checkoutButton = new JButton("Checkout");
@@ -46,14 +46,14 @@ public class CartFrame extends JFrame {
         bottomPanel.add(backButton);
 
         add(bottomPanel, BorderLayout.SOUTH);
-
+        //خاصيه للزر اذا صار فاضي يطلع خطا واذا صار صحيح يكمل ويفتح واجهه الدفع
         checkoutButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (Cart.isEmpty()) {
                     JOptionPane.showMessageDialog(CartFrame.this, "Your cart is already empty.");
                     return;
                 }
-
+                
                 new PaymentFrame(CartFrame.this, cartModel).setVisible(true);
             }
         });

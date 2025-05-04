@@ -9,7 +9,10 @@ import java.sql.Statement;
 
 public class PaymentFrame extends JFrame {
 
+    private JFrame parentFrame; 
+
     public PaymentFrame(JFrame parent, DefaultListModel<String> cartModel) {
+        this.parentFrame = parent; 
         setTitle("Payment");
         setSize(400, 300);
         setLocationRelativeTo(null);
@@ -31,10 +34,8 @@ public class PaymentFrame extends JFrame {
 
         form.add(new JLabel("Payment Method:"));
         form.add(methodBox);
-
         form.add(new JLabel("Card Number:"));
         form.add(cardNumber);
-
         form.add(new JLabel("CVV:"));
         form.add(cvv);
 
@@ -43,61 +44,102 @@ public class PaymentFrame extends JFrame {
         JButton payBtn = new JButton("Pay");
         add(payBtn, BorderLayout.SOUTH);
 
-        payBtn.addActionListener(e -> {
-            String method = (String) methodBox.getSelectedItem();
+        payBtn.addActionListener(e -> processPayment(methodBox, cardNumber, cvv, cartModel));
+    }
 
-            if (method.equals("Cash on Delivery") || 
-                (!cardNumber.getText().isEmpty() && !cvv.getText().isEmpty())) {
+    private void processPayment(JComboBox<String> methodBox, JTextField cardNumber, JTextField cvv, DefaultListModel<String> cartModel) {
+        String method = (String) methodBox.getSelectedItem();
+        String card = cardNumber.getText().trim();
+        String cvvCode = cvv.getText().trim();
 
-                try {
-                    Connection conn = DatabaseConnection.connect();
-                    if (conn == null) {
-                        JOptionPane.showMessageDialog(this, "Database connection failed.");
-                        return;
-                    }
+       
+        if (!validatePayment(method, card, cvvCode)) {
+            return;
+        }
 
-                    String orderSql = "INSERT INTO orders (user_id) VALUES (?)";
-                    PreparedStatement orderStmt = conn.prepareStatement(orderSql, Statement.RETURN_GENERATED_KEYS);
-                    orderStmt.setInt(1, CurrentUser.getId());
-                    int affectedRows = orderStmt.executeUpdate();
-
-                    if (affectedRows == 0) {
-                        throw new SQLException("Creating order failed, no rows affected.");
-                    }
-
-                    int orderId = 0;
-                    var rs = orderStmt.getGeneratedKeys();
-                    if (rs.next()) {
-                        orderId = rs.getInt(1);
-                    }
-
-                    String itemSql = "INSERT INTO order_items (order_id, item_name) VALUES (?, ?)";
-                    PreparedStatement itemStmt = conn.prepareStatement(itemSql);
-
-                    for (String item : Cart.getItems()) {
-                        itemStmt.setInt(1, orderId);
-                        itemStmt.setString(2, item);
-                        itemStmt.addBatch();
-                    }
-
-                    itemStmt.executeBatch();
-                    conn.close();
-
-                    Cart.clear();
-                    cartModel.clear();
-                    cartModel.addElement("Cart is empty.");
-
-                    JOptionPane.showMessageDialog(this, "Order placed successfully!");
-                    this.dispose();
-                    parent.setVisible(true);
-
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
-                }
-
-            } else {
-                JOptionPane.showMessageDialog(this, "Please enter card details.");
+       
+        try {
+            Connection conn = DatabaseConnection.connect();
+            if (conn == null) {
+                JOptionPane.showMessageDialog(this, "Database connection failed.");
+                return;
             }
-        });
+
+            int orderId = createOrder(conn);
+            if (orderId == 0) {
+                JOptionPane.showMessageDialog(this, "Order creation failed.");
+                return;
+            }
+
+            saveOrderItems(conn, orderId);
+            conn.close();
+
+            Cart.clear();
+            cartModel.clear();
+            cartModel.addElement("Cart is empty.");
+
+            JOptionPane.showMessageDialog(this, "Order placed successfully!");
+
+        
+            parentFrame.dispose(); 
+            this.dispose(); 
+            new RestaurantListFrame().setVisible(true); 
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
+    }
+
+    private boolean validatePayment(String method, String card, String cvvCode) {
+        if (method.equals("Cash on Delivery")) {
+            return true; 
+        }
+
+        if (card.isEmpty() || cvvCode.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter card details.");
+            return false;
+        }
+
+        if (!card.matches("\\d{12}")) {
+            JOptionPane.showMessageDialog(this, "Card number must be exactly 12 digits.");
+            return false;
+        }
+
+        if (!cvvCode.matches("\\d{3}")) {
+            JOptionPane.showMessageDialog(this, "CVV must be exactly 3 digits.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private int createOrder(Connection conn) throws SQLException {
+        String orderSql = "INSERT INTO orders (user_id) VALUES (?)";
+        PreparedStatement orderStmt = conn.prepareStatement(orderSql, Statement.RETURN_GENERATED_KEYS);
+        orderStmt.setInt(1, CurrentUser.getId());
+        int affectedRows = orderStmt.executeUpdate();
+
+        if (affectedRows == 0) {
+            throw new SQLException("Creating order failed, no rows affected.");
+        }
+
+        java.sql.ResultSet rs = orderStmt.getGeneratedKeys();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
+    }
+
+    private void saveOrderItems(Connection conn, int orderId) throws SQLException {
+        String itemSql = "INSERT INTO order_items (order_id, item_name) VALUES (?, ?)";
+        PreparedStatement itemStmt = conn.prepareStatement(itemSql);
+
+        for (String item : Cart.getItems()) {
+            itemStmt.setInt(1, orderId);
+            itemStmt.setString(2, item);
+            itemStmt.addBatch();
+        }
+
+        itemStmt.executeBatch();
     }
 }

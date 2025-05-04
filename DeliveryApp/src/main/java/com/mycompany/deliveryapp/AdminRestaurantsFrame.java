@@ -22,17 +22,19 @@ public class AdminRestaurantsFrame extends JFrame {
         title.setFont(new Font("Arial", Font.BOLD, 24));
         add(title, BorderLayout.NORTH);
 
-        String[] columns = {"ID", "Name", "Type"};
-        model = new DefaultTableModel(columns, 0);
-        table = new JTable(model);
+        String[] columns = {"ID", "Name", "Type"};//اضافه اعمده فوق للاراي
+        model = new DefaultTableModel(columns, 0);//
+        table = new JTable(model);//تضيف تيبل لعرض المطاعم
         add(new JScrollPane(table), BorderLayout.CENTER);
-
-        JPanel formPanel = new JPanel(new GridLayout(1, 4, 10, 10));
+        
+        JPanel formPanel = new JPanel(new GridLayout(1, 4, 10, 10));//تنظيم
+        //تيكست فيلد للي تحت علشان تقدر تضيف
         nameField = new JTextField();
         typeField = new JTextField();
+        //اضافه ازرار
         JButton addButton = new JButton("Add");
         JButton deleteButton = new JButton("Delete Selected");
-
+        //add
         formPanel.add(new JLabel("Name:"));
         formPanel.add(nameField);
         formPanel.add(typeField);
@@ -40,20 +42,20 @@ public class AdminRestaurantsFrame extends JFrame {
         formPanel.add(deleteButton);
 
         add(formPanel, BorderLayout.SOUTH);
-
-        loadRestaurants();
-
+        
+        loadRestaurants();//تجيب بيانات المطاعم
+        //تضيف خصائص للزر
         addButton.addActionListener(e -> addRestaurant());
         deleteButton.addActionListener(e -> deleteSelected());
     }
 
-    private void loadRestaurants() {
-        model.setRowCount(0);
+    private void loadRestaurants() {    //يجيب بيانات من الداتا بيس
+        model.setRowCount(0);//حذف الصفوف 
         try {
             Connection conn = DatabaseConnection.connect();
             String sql = "SELECT id, name, type FROM restaurants ORDER BY id";
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = stmt.executeQuery(sql);//ينفذ
 
             while (rs.next()) {
                 model.addRow(new Object[]{
@@ -70,7 +72,7 @@ public class AdminRestaurantsFrame extends JFrame {
     }
 
     private void addRestaurant() {
-        String name = nameField.getText().trim();
+        String name = nameField.getText().trim();//trim يشيل المسافات 
         String type = typeField.getText().trim();
 
         if (name.isEmpty() || type.isEmpty()) {
@@ -80,12 +82,12 @@ public class AdminRestaurantsFrame extends JFrame {
 
         try {
             Connection conn = DatabaseConnection.connect();
-            String sql = "INSERT INTO restaurants (name, type) VALUES (?, ?)";
+            String sql = "INSERT INTO restaurants (name, type) VALUES (?, ?)";//امر الsql
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, name);
+            stmt.setString(1, name);//يحولهstring ويربطه بالامر 
             stmt.setString(2, type);
-            stmt.executeUpdate();
-            conn.close();
+            stmt.executeUpdate();//ينفذ
+            conn.close();//يقفل الاتصال
 
             nameField.setText("");
             typeField.setText("");
@@ -97,7 +99,7 @@ public class AdminRestaurantsFrame extends JFrame {
     }
 
     private void deleteSelected() {
-        int selectedRow = table.getSelectedRow();
+        int selectedRow = table.getSelectedRow();//رقم الصف
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Please select a restaurant to delete.");
             return;
@@ -107,13 +109,13 @@ public class AdminRestaurantsFrame extends JFrame {
 
         try {
             Connection conn = DatabaseConnection.connect();
-            String sql = "DELETE FROM restaurants WHERE id = ?";
+            String sql = "DELETE FROM restaurants WHERE id = ?";//امر الsql
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
-            conn.close();
+            stmt.setInt(1, id);//يحولهint ويربطه بالامر 
+            stmt.executeUpdate();//ينفذ عمليه الحذف
+            conn.close();//اغلاق الاتصال
 
-            loadRestaurants();
+            loadRestaurants();//تحديث
             JOptionPane.showMessageDialog(this, "Restaurant deleted.");
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error deleting restaurant: " + e.getMessage());
