@@ -2,10 +2,14 @@ package com.mycompany.deliveryapp;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class PaymentFrame extends JFrame {
 
-    public PaymentFrame() {
+    public PaymentFrame(JFrame parent, DefaultListModel<String> cartModel) {
         setTitle("Payment");
         setSize(400, 300);
         setLocationRelativeTo(null);
@@ -41,28 +45,59 @@ public class PaymentFrame extends JFrame {
 
         payBtn.addActionListener(e -> {
             String method = (String) methodBox.getSelectedItem();
-            String cardNum = cardNumber.getText().trim();
-            String cvvNum = cvv.getText().trim();
 
-            if (method.equals("Cash on Delivery")) {
-                JOptionPane.showMessageDialog(this, "Order confirmed! Please pay upon delivery.");
-                this.dispose();
-            } else {
-                if (cardNum.isEmpty() || cvvNum.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Please enter card details.");
-                } else if (!cardNum.matches("\\d{12}")) {
-                    JOptionPane.showMessageDialog(this, "Card number must be exactly 12 digits.");
-                } else if (!cvvNum.matches("\\d{3}")) {
-                    JOptionPane.showMessageDialog(this, "CVV must be exactly 3 digits.");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Payment successful with " + method + "!");
+            if (method.equals("Cash on Delivery") || 
+                (!cardNumber.getText().isEmpty() && !cvv.getText().isEmpty())) {
+
+                try {
+                    Connection conn = DatabaseConnection.connect();
+                    if (conn == null) {
+                        JOptionPane.showMessageDialog(this, "Database connection failed.");
+                        return;
+                    }
+
+                    String orderSql = "INSERT INTO orders (user_id) VALUES (?)";
+                    PreparedStatement orderStmt = conn.prepareStatement(orderSql, Statement.RETURN_GENERATED_KEYS);
+                    orderStmt.setInt(1, CurrentUser.getId());
+                    int affectedRows = orderStmt.executeUpdate();
+
+                    if (affectedRows == 0) {
+                        throw new SQLException("Creating order failed, no rows affected.");
+                    }
+
+                    int orderId = 0;
+                    var rs = orderStmt.getGeneratedKeys();
+                    if (rs.next()) {
+                        orderId = rs.getInt(1);
+                    }
+
+                    String itemSql = "INSERT INTO order_items (order_id, item_name) VALUES (?, ?)";
+                    PreparedStatement itemStmt = conn.prepareStatement(itemSql);
+
+                    for (String item : Cart.getItems()) {
+                        itemStmt.setInt(1, orderId);
+                        itemStmt.setString(2, item);
+                        itemStmt.addBatch();
+                    }
+
+                    itemStmt.executeBatch();
+                    conn.close();
+
+                    Cart.clear();
+                    cartModel.clear();
+                    cartModel.addElement("Cart is empty.");
+
+                    JOptionPane.showMessageDialog(this, "Order placed successfully!");
                     this.dispose();
+                    parent.setVisible(true);
+
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
                 }
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Please enter card details.");
             }
         });
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new PaymentFrame().setVisible(true));
     }
 }

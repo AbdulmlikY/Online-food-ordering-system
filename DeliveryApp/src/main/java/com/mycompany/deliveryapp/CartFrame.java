@@ -4,10 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.SQLException;
 import java.util.List;
 
 public class CartFrame extends JFrame {
@@ -58,55 +54,7 @@ public class CartFrame extends JFrame {
                     return;
                 }
 
-     
-                PaymentFrame paymentFrame = new PaymentFrame();
-                paymentFrame.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
-                paymentFrame.setVisible(true);
-
-        
-                try {
-                    Connection conn = DatabaseConnection.connect();
-                    if (conn == null) {
-                        JOptionPane.showMessageDialog(CartFrame.this, "Database connection failed.");
-                        return;
-                    }
-
-                    String orderSql = "INSERT INTO orders (user_id) VALUES (?)";
-                    PreparedStatement orderStmt = conn.prepareStatement(orderSql, Statement.RETURN_GENERATED_KEYS);
-                    orderStmt.setInt(1, CurrentUser.getId());
-                    int affectedRows = orderStmt.executeUpdate();
-
-                    if (affectedRows == 0) {
-                        throw new SQLException("Creating order failed, no rows affected.");
-                    }
-
-                    int orderId = 0;
-                    var rs = orderStmt.getGeneratedKeys();
-                    if (rs.next()) {
-                        orderId = rs.getInt(1);
-                    }
-
-                    String itemSql = "INSERT INTO order_items (order_id, item_name) VALUES (?, ?)";
-                    PreparedStatement itemStmt = conn.prepareStatement(itemSql);
-
-                    for (String item : Cart.getItems()) {
-                        itemStmt.setInt(1, orderId);
-                        itemStmt.setString(2, item);
-                        itemStmt.addBatch();
-                    }
-
-                    itemStmt.executeBatch();
-                    conn.close();
-
-                    Cart.clear();
-                    cartModel.clear();
-                    cartModel.addElement("Cart is empty.");
-
-                    JOptionPane.showMessageDialog(CartFrame.this, "Order placed successfully!");
-
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(CartFrame.this, "Error: " + ex.getMessage());
-                }
+                new PaymentFrame(CartFrame.this, cartModel).setVisible(true);
             }
         });
 
