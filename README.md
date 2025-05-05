@@ -33,7 +33,7 @@ Customer  - Email: john@example.com       | Password: user1234
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/YourUsername/OnlineFoodOrderingSystem.git
+   git clone https://github.com/AbdulmlikY/OnlineFoodOrderingSystem.git
    ```
 
 2. Open the project in **NetBeans** or any Java IDE.
